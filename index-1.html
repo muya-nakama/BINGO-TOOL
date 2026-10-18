@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#151e30">
+<title>ビンゴ抽選ツール</title>
+<style>
+:root{font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif;color-scheme:dark;--bg:#101827;--card:#1c293d;--line:#36465e;--text:#f5f8ff;--muted:#bdcadb;--accent:#70d7d4}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% 0,#233854 0,#101827 65%);color:var(--text);min-height:100vh}.wrap{max-width:780px;margin:auto;padding:24px 16px 70px}h1{text-align:center;font-size:clamp(25px,5.5vw,35px);margin:14px 0 5px}.sub{text-align:center;color:var(--muted);margin:0 0 25px;font-size:14px}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:18px;box-shadow:0 10px 28px #0002}.settings{display:flex;align-items:end;gap:12px;flex-wrap:wrap}.field{flex:1;min-width:150px}label{display:block;font-size:14px;color:var(--muted);margin-bottom:8px}input{width:100%;min-height:48px;border:1px solid #65748b;border-radius:11px;background:#111d30;color:white;font-size:20px;padding:8px 12px;font-variant-numeric:tabular-nums}button{border:0;border-radius:12px;cursor:pointer;font:inherit;font-weight:700;transition:filter .1s,transform .1s;touch-action:manipulation}button:active:not(:disabled){transform:scale(.98)}button:disabled{opacity:.45;cursor:not-allowed}.apply{height:48px;padding:0 19px;background:#d8e8f1;color:#12243a}.stage{text-align:center;padding:27px 12px 22px}.eyebrow{color:var(--muted);font-size:15px}.ball{width:min(55vw,245px);height:min(55vw,245px);margin:16px auto;display:grid;place-items:center;border-radius:50%;background:radial-gradient(circle at 33% 24%,#ffffff 0,#eaffff 12%,#9ee8ea 33%,#2e9eae 70%,#186078 100%);box-shadow:inset -15px -20px 25px #003e5266,0 16px 40px #0005;color:#123149;font-size:clamp(64px,16vw,110px);font-weight:900;font-variant-numeric:tabular-nums;overflow:hidden}.ball.empty{color:#345567}.draw{display:block;background:#77ddd2;color:#102b35;font-size:22px;width:min(100%,360px);height:65px;margin:10px auto 0}.counter{text-align:center;color:var(--muted);font-size:15px;margin:17px 0 0;font-variant-numeric:tabular-nums}.progress{height:8px;max-width:360px;margin:12px auto 0;border-radius:10px;background:#35435a;overflow:hidden}.bar{height:100%;width:0;background:var(--accent);transition:width .2s}.historyHead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:13px}h2{font-size:19px;margin:0}.clear{border:1px solid #df8990;background:transparent;color:#ffc5c9;padding:11px 14px}.numbers{display:flex;flex-wrap:wrap;gap:9px;min-height:60px;align-content:start}.chip{display:grid;place-items:center;border:1px solid #5f7c9a;border-radius:999px;background:#273c58;min-width:48px;height:48px;padding:0 8px;font-size:18px;font-weight:750;font-variant-numeric:tabular-nums}.chip:first-child{background:#75d8d4;color:#122838;border-color:#75d8d4}.hint{font-size:13px;color:var(--muted);margin-top:13px;line-height:1.65}.emptyText{color:var(--muted);margin:11px 0}#message{min-height:22px;text-align:center;color:#ffe2a5;font-size:14px;margin:12px 0 0}@media(max-width:430px){.wrap{padding-top:14px}.card{padding:16px}.settings .apply{width:100%}}
+
+/* 1画面レイアウト：履歴のみ内部スクロール */
+html,body{height:100%;overflow:hidden}
+body{min-height:0}
+.wrap{height:100dvh;min-height:0;display:flex;flex-direction:column;gap:8px;padding:10px 12px max(10px,env(safe-area-inset-bottom));overflow:hidden}
+h1{font-size:clamp(19px,3.4vh,26px);line-height:1.2;margin:0;text-align:center;flex:none}
+.sub{font-size:11px;margin:0 0 2px;flex:none}
+.card{margin:0;padding:10px 12px;border-radius:13px;box-shadow:none;min-height:0;flex:none}
+.settings{gap:8px;flex-wrap:nowrap;align-items:end}
+.field{min-width:0;flex:1}
+label{font-size:12px;margin-bottom:4px}
+input{min-height:36px;height:36px;font-size:17px;padding:3px 9px}
+.apply{height:36px;padding:0 10px;font-size:12px;white-space:nowrap}
+.card>.hint{display:none}
+.stage{padding:8px 12px 10px}
+.eyebrow{font-size:12px}
+.ball{width:clamp(90px,19vh,165px);height:clamp(90px,19vh,165px);margin:5px auto;font-size:clamp(41px,10vh,76px)}
+.draw{height:40px;max-width:180px;font-size:16px;margin:5px auto 0;border-radius:9px}
+#message{min-height:0;margin:3px 0 0;font-size:12px;line-height:1.3}
+#message:empty{display:none}
+.counter{font-size:12px;margin:5px 0 0}
+.progress{height:5px;margin:6px auto 0}
+.wrap>.card:last-child{display:flex;flex-direction:column;flex:1;min-height:76px;overflow:hidden}
+.historyHead{margin-bottom:7px;flex:none}
+h2{font-size:15px}
+.clear{padding:6px 10px;font-size:12px;border-radius:8px}
+.numbers{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;align-content:flex-start;gap:6px;padding:2px 2px 8px}
+.chip{height:35px;min-width:35px;font-size:14px;padding:0 6px}
+.emptyText{font-size:12px;margin:5px 0}
+@media(max-height:600px){.wrap{gap:5px;padding-top:5px}h1{font-size:18px}.sub{display:none}.stage{padding:5px}.ball{width:clamp(68px,17vh,105px);height:clamp(68px,17vh,105px);font-size:42px}.draw{height:34px}.card{padding:7px 10px}}
+@media(max-width:430px){.wrap{padding-top:9px}.card{padding:9px 10px}.settings .apply{width:auto}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<h1>ビンゴ抽選ツール</h1><p class="sub">1〜最大値の数字を、重複なしで抽選</p>
+<section class="card"><div class="settings"><div class="field"><label for="maximum">抽選する数字の最大値（1〜9999）</label><input id="maximum" type="number" min="1" max="9999" step="1" value="75" inputmode="numeric"></div><button class="apply" id="apply" type="button">最大値を設定</button></div><p class="hint">抽選を始めたあとに最大値を変更すると、履歴を初期化するか確認します。</p></section>
+<section class="card stage"><div class="eyebrow" id="status">次の番号は？</div><div class="ball empty" id="ball" aria-live="polite">?</div><button class="draw" id="draw" type="button">抽選する</button><p id="message" role="status" aria-live="polite"></p><p class="counter" id="counter">抽選済み 0 / 75 ・ 残り 75</p><div class="progress" role="progressbar" aria-label="抽選進捗" aria-valuemin="0" aria-valuemax="75" aria-valuenow="0" id="progress"><div class="bar" id="bar"></div></div></section>
+<section class="card"><div class="historyHead"><h2>抽選履歴 <span id="count">(0)</span></h2><button class="clear" id="clear" type="button">履歴をクリア</button></div><div class="numbers" id="history"><p class="emptyText">まだ抽選されていません。</p></div><p class="hint">新しく出た番号から順に表示します。抽選した番号は自動で次回以降の候補から外れます。履歴はこの端末のブラウザに保存されます。</p></section>
+</main>
+<script>
+(()=>{'use strict';
+const key='bingo-draw-v1';
+const $=id=>document.getElementById(id);
+let max=75,drawn=[];
+try{const saved=JSON.parse(localStorage.getItem(key));if(saved&&Number.isInteger(saved.max)&&saved.max>=1&&saved.max<=9999&&Array.isArray(saved.drawn)&&saved.drawn.every(n=>Number.isInteger(n)&&n>=1&&n<=saved.max)&&new Set(saved.drawn).size===saved.drawn.length){max=saved.max;drawn=saved.drawn}}catch{}
+function save(){try{localStorage.setItem(key,JSON.stringify({max,drawn}))}catch{}}
+function render(){ $('maximum').value=max;const last=drawn.at(-1);$('ball').textContent=last??'?';$('ball').classList.toggle('empty',last===undefined);const remaining=max-drawn.length;$('status').textContent=remaining===0?'すべて抽選完了！':last===undefined?'次の番号は？':'抽選された番号';$('draw').disabled=remaining===0;$('draw').textContent=remaining===0?'抽選完了':'抽選する';$('counter').textContent=`抽選済み ${drawn.length} / ${max} ・ 残り ${remaining}`;$('count').textContent=`(${drawn.length})`;$('bar').style.width=(drawn.length/max*100)+'%';$('progress').setAttribute('aria-valuemax',String(max));$('progress').setAttribute('aria-valuenow',String(drawn.length));const parent=$('history');parent.replaceChildren();if(!drawn.length){const p=document.createElement('p');p.className='emptyText';p.textContent='まだ抽選されていません。';parent.append(p)}else{const frag=document.createDocumentFragment();for(const n of [...drawn].reverse()){const chip=document.createElement('span');chip.className='chip';chip.textContent=n;frag.append(chip)}parent.append(frag)}}
+function randBelow(n){const array=new Uint32Array(1),limit=Math.floor(4294967296/n)*n;do{crypto.getRandomValues(array)}while(array[0]>=limit);return array[0]%n}
+$('draw').addEventListener('click',()=>{if(drawn.length===max)return;const used=new Set(drawn),remain=[];for(let i=1;i<=max;i++)if(!used.has(i))remain.push(i);drawn.push(remain[randBelow(remain.length)]);$('message').textContent='';save();render()});
+$('apply').addEventListener('click',()=>{const raw=$('maximum').value.trim(),newMax=Number(raw);if(!raw||!Number.isInteger(newMax)||newMax<1||newMax>9999){$('message').textContent='最大値は1〜9999の整数で入力してね。';$('maximum').value=max;return}if(newMax===max){$('message').textContent='現在の最大値と同じです。';return}if(drawn.length&&!confirm('最大値を変更すると、現在の抽選履歴がすべて消えます。変更しますか？')){$('maximum').value=max;return}max=newMax;drawn=[];$('message').textContent='最大値を設定しました。';save();render()});
+$('clear').addEventListener('click',()=>{if(!drawn.length){$('message').textContent='クリアする履歴はありません。';return}if(!confirm('抽選履歴と除外番号をすべてクリアしますか？'))return;drawn=[];$('message').textContent='履歴をクリアしました。すべての番号を再抽選できます。';save();render()});
+$('maximum').addEventListener('keydown',e=>{if(e.key==='Enter')$('apply').click()});
+render();
+})();
+</script>
+</body></html>
