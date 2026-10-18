@@ -1,0 +1,6 @@
+/* 抽選中は大きさを変えず、軽く左右に振る */
+#ball.bingo-rolling { animation:bingo-rattle .11s ease-in-out infinite alternate; }
+#ball.bingo-landed { animation:bingo-land .24s ease-out; }
+@keyframes bingo-rattle { from{transform:translate(-3px,1px) rotate(-2deg)} to{transform:translate(3px,-1px) rotate(2deg)} }
+@keyframes bingo-land { 0%{transform:translateY(-9px) scale(1.05)} 55%{transform:translateY(2px) scale(.98)} 100%{transform:none} }
+@media(prefers-reduced-motion:reduce){#ball.bingo-rolling,#ball.bingo-landed{animation:none}}
