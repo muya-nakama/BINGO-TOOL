@@ -23,6 +23,7 @@ function drumPose(degrees){
  document.querySelectorAll('[data-facet]').forEach((node,i)=>{
   const a=project(vertices[i]),b=project(vertices[(i+1)%8]);
   node.setAttribute('points',[a,b,[b[0]+62,b[1]-28],[a[0]+62,a[1]-28]].map(p=>p.join(',')).join(' '));
+  $('sidegrain-'+i).setAttribute('transform',`matrix(.62 -.28 ${(b[0]-a[0])/100} ${(b[1]-a[1])/100} ${a[0]} ${a[1]})`);
  });
  // Keep the outlet inside the same side panel; the front face occludes it when the panel turns away.
  const a=project(vertices[2]),b=project(vertices[3]);
