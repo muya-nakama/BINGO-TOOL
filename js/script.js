@@ -24,18 +24,22 @@ function drumPose(degrees){
   const a=project(vertices[i]),b=project(vertices[(i+1)%8]);
   node.setAttribute('points',[a,b,[b[0]+62,b[1]-28],[a[0]+62,a[1]-28]].map(p=>p.join(',')).join(' '));
  });
- // The outlet travels with the drum and returns above the tray at the end.
- const t=degrees*Math.PI/180,cx=242.4,cy=183.56,dx=377-cx,dy=263-cy;
- const x=cx+dx*Math.cos(t)-dy*Math.sin(t),y=cy+dx*Math.sin(t)+dy*Math.cos(t);
- $('outlet').setAttribute('cx',x);$('outlet').setAttribute('cy',y);$('outlet').setAttribute('transform',`rotate(${degrees-22} ${x} ${y})`);
+ // Keep the outlet inside the same side panel; the front face occludes it when the panel turns away.
+ const a=project(vertices[2]),b=project(vertices[3]);
+ const panel=[a,b,[b[0]+62,b[1]-28],[a[0]+62,a[1]-28]];
+ $('outlet-panel-mask').setAttribute('points',panel.map(p=>p.join(',')).join(' '));
+ const x=(a[0]+b[0])/2+31,y=(a[1]+b[1])/2-14;
+ $('outlet').setAttribute('cx',x);$('outlet').setAttribute('cy',y);
+
 }
 function ballFrames(){
  const svg=document.querySelector('.lottery-machine');
  const matrix=svg.getScreenCTM?.();
  const bounds=ball.getBoundingClientRect();
+ const holeX=Number($('outlet').getAttribute('cx')),holeY=Number($('outlet').getAttribute('cy'));
  const point=(x,y)=>matrix?[matrix.a*x+matrix.c*y+matrix.e-bounds.left-bounds.width/2,matrix.b*x+matrix.d*y+matrix.f-bounds.top-bounds.height/2]:[78+(x-377)*.7,-104+(y-263)*.7];
  const transform=(x,y,scale)=>{const p=point(x,y);return `translate(${p[0]}px,${p[1]}px) scale(${scale})`;};
- return [{transform:transform(377,263,.16),opacity:0},{transform:transform(384,340,.19),opacity:1,offset:.27},{transform:transform(365,350,.32),opacity:1,offset:.48},{transform:'translate(0,3px) scale(1.04)',opacity:1,offset:.88},{transform:'translate(0,0) scale(1)',opacity:1}];
+ return [{transform:transform(holeX,holeY,.16),opacity:0},{transform:transform(384,340,.19),opacity:1,offset:.27},{transform:transform(365,350,.32),opacity:1,offset:.48},{transform:'translate(0,3px) scale(1.04)',opacity:1,offset:.88},{transform:'translate(0,0) scale(1)',opacity:1}];
 }
 function startDrum(duration){
  const start=performance.now();
@@ -51,5 +55,5 @@ $('draw').addEventListener('click',async()=>{if(busy||drawn.length===max)return;
 $('apply').addEventListener('click',()=>{if(busy)return;const raw=$('maximum').value.trim(),next=Number(raw);if(!raw||!Number.isInteger(next)||next<1||next>9999){$('message').textContent='最大値は1〜9999の整数で入力してね。';$('maximum').value=max;return;}if(next===max){$('message').textContent='現在の最大値と同じです。';return;}if(drawn.length&&!confirm('最大値を変更すると、現在の抽選履歴がすべて消えます。変更しますか？')){$('maximum').value=max;return;}max=next;drawn=[];$('message').textContent='最大値を設定しました。';save();render();});
 $('clear').addEventListener('click',()=>{if(busy)return;if(!drawn.length){$('message').textContent='クリアする履歴はありません。';return;}if(!confirm('抽選履歴と除外番号をすべてクリアしますか？'))return;drawn=[];$('message').textContent='履歴をクリアしました。';save();render();});
 $('mute').addEventListener('click',()=>{muted=!muted;if(muted)stopSounds();try{localStorage.setItem('bingo-muted',muted?'1':'0');}catch{}updateMute();});
-$('maximum').addEventListener('keydown',event=>{if(event.key==='Enter')$('apply').click();});updateMute();render();
+$('maximum').addEventListener('keydown',event=>{if(event.key==='Enter')$('apply').click();});drumPose(0);updateMute();render();
 })();
